@@ -1,45 +1,85 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { ChevronDown } from "lucide-react";
 
-export default function HomeHero() {
+const headline = "Professional trading.";
+const subHeadline = "Without the noise.";
+
+export default function Hero() {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-b from-blue-700 via-blue-800 to-blue-900">
-      <div className="max-w-7xl mx-auto px-6 pt-44 pb-64 text-center text-white">
+    <section className="relative overflow-hidden bg-gradient-to-b from-blue-600 to-blue-700 text-white">
+      <div className="max-w-6xl mx-auto pt-36 pb-56 px-6 text-center relative z-10">
+
+        {/* LETTER BY LETTER HEADLINE */}
         <motion.h1
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="text-5xl md:text-6xl font-extrabold tracking-tight"
+          className="text-5xl md:text-6xl font-bold"
+          initial="hidden"
+          animate="visible"
+          variants={{ visible: { transition: { staggerChildren: 0.04 } } }}
         >
-          Trade with signal.
-          <span className="block text-blue-200">Not noise.</span>
+          {headline.split("").map((char, i) => (
+            <motion.span
+              key={i}
+              variants={{
+                hidden: { opacity: 0, y: 24 },
+                visible: { opacity: 1, y: 0 }
+              }}
+            >
+              {char}
+            </motion.span>
+          ))}
         </motion.h1>
 
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="mt-8 max-w-2xl mx-auto text-blue-100"
+        <motion.h2
+          className="text-5xl md:text-6xl font-bold text-blue-200 mt-2"
+          initial="hidden"
+          animate="visible"
+          variants={{
+            visible: {
+              transition: { staggerChildren: 0.04, delayChildren: 0.6 }
+            }
+          }}
         >
-          Real-time market data, AI-powered signals, and alerts built for traders
-          who take results seriously.
-        </motion.p>
+          {subHeadline.split("").map((char, i) => (
+            <motion.span
+              key={i}
+              variants={{
+                hidden: { opacity: 0, y: 24 },
+                visible: { opacity: 1, y: 0 }
+              }}
+            >
+              {char}
+            </motion.span>
+          ))}
+        </motion.h2>
 
+        <p className="mt-6 max-w-xl mx-auto text-blue-100">
+          Signalist gives you real-time market data, alerts, and AI-powered
+          insights designed for serious traders.
+        </p>
+
+        {/* SCROLL INDICATOR */}
         <motion.div
-          initial={{ opacity: 0, y: 60 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-          className="mx-auto mt-20 max-w-5xl rounded-3xl bg-slate-900/80 p-6 shadow-2xl"
+          className="mt-20 flex justify-center"
+          animate={{ y: [0, 12, 0] }}
+          transition={{ repeat: Infinity, duration: 1.5 }}
         >
-          <div className="h-56 flex items-center justify-center text-emerald-400 tracking-widest">
-            LIVE MARKET FEED
-          </div>
+          <ChevronDown className="w-8 h-8 opacity-80" />
         </motion.div>
       </div>
 
-      {/* curved bottom */}
-      <div className="absolute bottom-0 left-0 right-0 h-32 bg-white rounded-t-[100%]" />
+      {/* CURVED WHITE TRANSITION */}
+      <svg
+        className="absolute bottom-0 w-full"
+        viewBox="0 0 1440 120"
+        preserveAspectRatio="none"
+      >
+        <path
+          fill="white"
+          d="M0,64L60,69.3C120,75,240,85,360,80C480,75,600,53,720,53.3C840,53,960,75,1080,74.7C1200,75,1320,53,1380,42.7L1440,32L1440,120L0,120Z"
+        />
+      </svg>
     </section>
   );
 }

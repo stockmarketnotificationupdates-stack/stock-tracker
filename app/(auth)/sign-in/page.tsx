@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/lib/firebase/client";
+import { createSession } from "@/lib/actions/auth.actions";
 import { Button } from "@/components/ui/button";
 import InputField from "@/components/forms/InputField";
 import FooterLink from "@/components/forms/FooterLink";
@@ -12,11 +13,11 @@ import { motion } from "framer-motion";
 export default function SignIn() {
   const router = useRouter();
 
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [remember, setRemember] = useState(true);
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -26,10 +27,12 @@ export default function SignIn() {
     setLoading(true);
 
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      const credential = await signInWithEmailAndPassword(auth, email, password);
+      const token = await credential.user.getIdToken();
+      await createSession(token);
       router.replace("/stocks");
     } catch (err: any) {
-      setError(err.message);
+      setError(err.message ?? "Failed to sign in");
     } finally {
       setLoading(false);
     }
@@ -37,36 +40,26 @@ export default function SignIn() {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.8, ease: "easeOut" }}
-      className="relative"
+      initial={{ opacity: 0, y: 24, scale: 0.98 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
     >
-      {/* FLOATING CARD */}
       <motion.div
-        animate={{ y: [0, -6, 0] }}
-        transition={{
-          duration: 6,
-          repeat: Infinity,
-          ease: "easeInOut",
-        }}
-        whileHover={{ y: -8 }}
-        className="bg-white rounded-2xl p-8 shadow-xl shadow-blue-500/10"
+        whileHover={{ y: -4 }}
+        className="bg-white rounded-2xl p-8 shadow-xl shadow-blue-500/10 will-change-transform"
       >
-        {/* Header */}
         <h1 className="text-2xl font-semibold text-slate-900">
           Welcome back
         </h1>
         <p className="text-sm text-slate-500 mb-6">
-          Sign in to your BlueBase account
+          Sign in to your StockHorizon account
         </p>
 
-        {/* Form */}
         <form onSubmit={handleSignIn} className="space-y-5">
           <InputField
             name="email"
             label="Email"
-            placeholder="you@bluebase.io"
+            placeholder="you@stockhorizon.io"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
@@ -103,8 +96,8 @@ export default function SignIn() {
 
           {error && (
             <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
+              initial={{ opacity: 0, y: 4 }}
+              animate={{ opacity: 1, y: 0 }}
               className="text-sm text-red-500"
             >
               {error}
@@ -116,7 +109,7 @@ export default function SignIn() {
             disabled={loading}
             className="w-full bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-500/30"
           >
-            {loading ? "Signing in..." : "Sign In"}
+            {loading ? "Signing in…" : "Sign In"}
           </Button>
 
           <FooterLink
